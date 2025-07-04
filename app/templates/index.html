@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Moet ik...</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        input[type="text"] {
+            padding: 0.7rem 1rem;
+            font-size: 1.2rem;
+            width: 300px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-top: 0.5rem;
+        }
+
+        button {
+            margin-top: 1rem;
+            padding: 0.6rem 1.5rem;
+            font-size: 1rem;
+            background-color: #0077cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005fa3;
+        }
+
+        .suggestion {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .response {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            background: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            min-height: 50px;
+        }
+
+        .tone-selector {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #444;
+        }
+
+        select {
+            margin-left: 0.5rem;
+            padding: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<h1>moet ik...</h1>
+
+<div class="input-group">
+    <label for="question">Maak je zin af:</label>
+    <input type="text" id="question" value="een jas aan doen">
+
+    <div class="suggestion" onclick="insertSuggestion()">🤔 Suggestie: <span id="suggestion-text">m'n ex terugappen</span></div>
+
+    <div class="tone-selector">
+        Toon van antwoord:
+        <select id="tone">
+            <option value="eerlijk">Eerlijk</option>
+            <option value="lief">Lief</option>
+            <option value="sarcastisch">Sarcastisch</option>
+            <option value="coachend">Coachend</option>
+        </select>
+    </div>
+
+    <button onclick="generateAnswer()">Stel mijn vraag</button>
+</div>
+
+<div class="response" id="response"></div>
+
+<script>
+    const suggestions = [
+        "m'n leven omgooien",
+        "de sportschool overslaan",
+        "nog een aflevering kijken",
+        "m'n ex terugappen",
+        "een kat adopteren",
+        "een tattoo nemen",
+        "m’n bed uitkomen",
+        "deze avocado nog eten"
+    ];
+
+    const answers = {
+        eerlijk: [
+            "Als je het moet vragen, weet je het antwoord eigenlijk al.",
+            "Waarschijnlijk wel, maar het hangt ervan af.",
+            "Nee. Maar je mag zelf kiezen."
+        ],
+        lief: [
+            "Alleen als jij denkt dat het goed voor je is 🧡",
+            "Ik wil alleen dat je gelukkig bent, dus doe wat goed voelt.",
+            "Misschien. Maar wees lief voor jezelf!"
+        ],
+        sarcastisch: [
+            "Tuurlijk, en meteen ook je leven heroverwegen.",
+            "Nee joh, wat kan er misgaan? 🙄",
+            "Ja, briljant idee. Wat kan er misgaan?"
+        ],
+        coachend: [
+            "Kijk naar je doel. Is dit een stap in die richting?",
+            "Stel jezelf de vraag: helpt dit je groeien?",
+            "Focus. Jij weet wat je moet doen."
+        ]
+    };
+
+    function insertSuggestion() {
+        const random = suggestions[Math.floor(Math.random() * suggestions.length)];
+        document.getElementById('question').value = random;
+        document.getElementById('suggestion-text').textContent = random;
+    }
+
+    async function generateAnswer() {
+        const tone = document.getElementById('tone').value;
+        const question = document.getElementById('question').value.trim();
+        const responseBox = document.getElementById('response');
+
+        responseBox.innerHTML = "⏳ Even nadenken...";
+
+        try {
+            const res = await fetch('/api/antwoord', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ vraag: question, toon: tone })
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();  // probeer de fout als tekst te loggen
+                throw new Error(`Serverfout (${res.status}): ${errorText}`);
+            }
+
+            const data = await res.json();
+            responseBox.innerHTML = `<strong>Moet ik ${question}?</strong><br>${data.antwoord}`;
+        } catch (err) {
+            console.error("💥 Fout:", err);
+            responseBox.innerHTML = "❌ Er ging iets mis: " + err.message;
+        }
+    }
+
+
+</script>
+</body>
+</html>
