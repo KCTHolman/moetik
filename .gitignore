@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg-info/
+*.egg
+*.log
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# VSCode / PyCharm / JetBrains
+.vscode/
+.idea/
+
+# OS-bestanden
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Compiled files
+*.so
+
+# Testing
+.tox/
+.coverage
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Misc
+*.bak
+*.swp
+*.tmp

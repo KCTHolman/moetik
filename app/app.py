@@ -4,9 +4,14 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-openai.api_key = os.getenv("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")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
+from flask import send_from_directory
+
+@app.route('/quotes.json')
+def quotes():
+    return send_from_directory('static', 'quotes.json')
 
 @app.route('/')
 def index():
